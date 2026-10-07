@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block body_start %}
+    <div class="bg-layer" aria-hidden="true">
+        <canvas class="bg-canvas" id="background"></canvas>
+    </div>
+{% endblock body_start %}
+
+
+{% block main_content %}
+    <div class="center box">
+        <header class="info-header">
+            <h1 style="margin: 0;">{{page.title}}</h1>
+            <div class="info-header-back">
+                <p style="font-size: 2em;"><a href="/" aria-label="Back">🅱🅰🅲🅺</a></h1>
+            </div>
+        </header>
+
+        <main>
+            <article>
+                <section>
+                    <hr class="fih-hr-line" aria-hidden="true">
+                    {{ page.content | safe }}
+                </section>
+            </article>
+        </main>
+    </div>
+{% endblock main_content %}
+
+{% block body_end %}
+<script defer src="../js/background.js"></script>
+{% endblock body_end %}

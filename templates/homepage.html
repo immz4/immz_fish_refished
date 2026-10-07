@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block body_start %}
+    <div class="bg-layer" aria-hidden="true">
+        <canvas class="bg-canvas" id="background"></canvas>
+    </div>
+{% endblock body_start %}
+
+
+{% block main_content %}
+    <div class="center box home-grid">
+        <header class="home-header">
+            <img src="{{ get_url(path = 'images/immz_fish.svg') }}" alt="IMMZ FISH">
+            <img src="{{ get_url(path = 'images/zoe_lembrik.svg') }}" alt="ZOE LEMBRIK">
+        </header>
+
+        <main>
+            <hr class="fih-hr-line" aria-hidden="true">
+            <h1>{{section.title}}</h1>
+            <nav>
+                <ul class="indent">
+                    <li class="home-link"><a id="active" href="{{ get_url(path='@/about.md') }}">about</a></li>
+                    <li class="home-link"><a id="active" href="{{ get_url(path='@/socials.md') }}">socials</a></li>
+                    <li class="home-link"><a>🆆🅸🅿 projects</a></li>
+                    <li class="home-link"><a>🆆🅸🅿 blog</a></li>
+                </ul>
+            </nav>
+        </main>
+
+        <footer class="home-footer">
+            <hr aria-hidden="true">
+            <address>email -- <a href="mailto:me@immz.fish" class="link-underline">me@immz.fish</a></address>
+            <p aria-hidden="true">🯆🯆 ~~~~  ~~~~ 🯆🯆</p>
+            <hr aria-hidden="true">
+            <p>webrings:</p>
+            <p>
+              <a href="https://webring.otomir23.me/immz/prev" aria-label="Previous">🅿🆁🅴🆅</a>
+              <a class="link-underline" href="https://webring.otomir23.me">[otomir23.me]</a>
+              <a href="https://webring.otomir23.me/immz/next" aria-label="Next">🅽🅴🆇🆃</a>
+            </p>
+        </footer>
+    </div>
+{% endblock main_content %}
+
+{% block body_end %}
+<script defer src="js/background.js"></script>
+{% endblock body_end %}

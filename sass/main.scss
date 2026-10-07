@@ -1,0 +1,186 @@
+@import "fonts.scss";
+
+$orange: rgb(251, 135, 78);
+
+/* Styling for tags */
+
+body {
+    color: $orange;
+    overflow-x: hidden;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    font-family: "Cozette Vector", sans-serif;
+    font-size: 1.1em;
+}
+
+p {
+    margin: 0px !important;
+}
+
+a {
+    text-decoration: none;
+    color: $orange;
+}
+
+ul {
+    padding: 0px;
+}
+
+li {
+    list-style: none;
+}
+
+menu {
+    padding: 0;
+}
+
+hr {
+    align-self: stretch;
+    border: 1.5px solid $orange;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+address {
+    font-style: normal;
+}
+
+/* Common styling */
+
+.fih-hr-line {
+    background: url("/images/fish.svg") 0 0;
+    background-repeat: repeat-x;
+    background-size: 10% 80%;
+    border: 0;
+    height: 25px;
+    padding: 0;
+}
+
+.bg-layer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: #05080d;
+}
+
+.bg-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.center {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.box {
+    height: 600px;
+    width: 400px;
+    padding: 25px;
+}
+
+@media (max-width: 470px) {
+    .box {
+        width: 95%;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+}
+
+.indent {
+    padding-left: 1ch;
+}
+
+.link-underline {
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+}
+
+/* Page specific styling */
+
+.home-grid {
+    display: grid;
+    grid-template-rows: 1fr 3fr 0.5fr;
+}
+
+.home-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
+    column-gap: 20px;
+
+    & :first-child {
+        height: 50px;
+    }
+
+    & :last-child {
+        border-left: 3px solid $orange;
+        padding-left: 20px;
+        height: 50px;
+    }
+}
+
+.home-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-items: stretch;
+    row-gap: 5px;
+    font-size: 1.2em;
+}
+
+@keyframes link-arrow {
+    0% {
+        content: ">> "
+    }
+
+    50% {
+        content: "> "
+    }
+
+    100% {
+        content: " "
+    }
+}
+
+.home-link {
+    font-size: 1.4em;
+    margin-top: 30px;
+
+    & :before {
+        content: ">> "
+    }
+
+    #active:hover:before {
+        animation:
+            0.3s linear 0s 1 forwards link-arrow;
+    }
+}
+
+
+
+.info-grid {
+    display: grid;
+    grid-template-rows: 0.5fr 3fr;
+}
+
+.info-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.info-header-back {
+    text-align: right;
+    position: relative;
+    align-content: center;
+}

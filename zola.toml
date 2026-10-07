@@ -1,0 +1,45 @@
+base_url = "https://immz.fish"
+
+title = "immz"
+description = "heeey this is personal website for immz/immz4. meeeeeeow :3"
+author = "immz"
+
+default_language = "en"
+compile_sass = true
+build_search_index = true
+generate_feeds = true
+taxonomies = [
+   # {name = "categories", feed = true},
+   # {name = "tags", feed = true},
+]
+
+generate_sitemap = true
+generate_robots_txt = true
+exclude_paginated_pages_in_sitemap = "all"
+
+[search]
+index_format = "fuse_json"
+include_title = true
+include_description = true
+include_content = true
+
+[markdown]
+bottom_footnotes = true
+render_emoji = false
+external_links_target_blank = true
+external_links_no_follow = false
+external_links_no_referrer = false
+smart_punctuation = false
+
+[markdown.highlighting]
+theme = "catppuccin-mocha"
+error_on_missing_language = true
+style = "class"
+
+[extra]
+js_switcher = true
+js_switcher_default = "dark"
+
+search_library = "pagefind"
+
+favicon32 = "favicon.png"

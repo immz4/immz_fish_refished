@@ -1,0 +1,98 @@
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="base" content="{{ config.base_url }}" />
+
+    {#- Page Metadata #}
+    {%- if page?.extra?.meta %}
+        {%- for data in page.extra.meta %}
+            <meta {% for key, value in data %} {% if key == "property" and value == "og:title" %} {% set_global page_has_og_title = true -%} {% endif %}
+                  {% if key == "property" and value == "og:description" %} {% set_global page_has_og_description = true -%} {% endif %}
+                  {% if key == "name" and value == "description" %} {% set_global page_has_description = true -%} {% endif %}
+                  {{ key }}
+                  None="{{ value }}"
+                  {% endfor %} />
+        {%- endfor %}
+    {%- endif %}
+
+    {#- Site title #}
+    {% set current_path = current_path | default(value="/") %}
+    {% if current_path == "/" %}
+        <title>{{<post.site_title config={config} />}}</title>
+        {% if not page_has_og_title %}
+            <meta property="og:title" content="{{<post.site_title config={config} />}}" />
+        {% endif %}
+
+    {% else %}
+        <title>
+            {% if page?.title %}
+                {{ page.title }}
+            {% elif section?.title %}
+                {{ section.title }}
+            {% elif config.title %}
+                {{ config.title }}
+            {% else %}
+                Post
+            {% endif %}
+        </title>
+
+        {% if not page_has_og_title %}
+            <meta property="og:title"
+                    content="{% if page?.title -%}{{ page.title }}{% elif config.title -%}{{ config.title }}{% else -%}Post{% endif -%}" />
+        {% endif %}
+    {% endif %}
+
+    {% if not page_has_og_description %}
+        {% if page?.description %}
+            <meta property="og:description" content="{{ page.description }}" />
+        {% elif config.description %}
+            <meta property="og:description" content="{{ config.description }}" />
+        {% endif %}
+    {% endif %}
+
+    {% if not page_has_description %}
+        {% if page?.description %}
+            <meta name="description" content="{{ page.description }}" />
+        {% elif config.description %}
+            <meta name="description" content="{{ config.description }}" />
+        {% endif %}
+    {% endif %}
+
+    {# Favicons #}
+    {%- if config.extra.favicon_svg %}
+    <link rel="icon" type="image/svg+xml" href="{{ get_url(path=config.extra.favicon_svg, trailing_slash=false) | safe }}" />
+    {%- endif %}
+
+    {%- if config.extra.favicon180 %}
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ get_url(path=config.extra.favicon180, trailing_slash=false) | safe }}" />
+    {%- endif %}
+
+    {%- if config.extra.favicon32 %}
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ get_url(path=config.extra.favicon32, trailing_slash=false) | safe }}" />
+    {%- endif %}
+
+    {%- if config.extra.favicon16 %}
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ get_url(path=config.extra.favicon16, trailing_slash=false) | safe }}" />
+    {%- endif %}
+
+    {#- Theme Switcher Button (For now disabled) #}
+    {#-
+        {%- set integrity = (config.extra.integrity if config.extra.integrity is defined else true) %}
+        {%- if (config.extra.js_switcher if config.extra.js_switcher is defined else true) %}
+            {%- set js_theme="js/theme.js" %}
+            {%- if config.extra.js_switcher_default %}
+                {%- if config.extra.js_switcher_default == "light" %}{% set js_theme = "js/theme_light.js" %}{% endif %}
+            {%- endif %}
+            <script
+                src="{{ get_url(path=js_theme, trailing_slash=false) | safe }}"
+                {%- if integrity %} integrity="sha384-{{ get_hash(path=js_theme, sha_type=384, base64=true) | safe }}"{%- endif %}
+            >
+            </script>
+        {%- endif %}
+    #}
+
+    <link href={{ get_url(path="fonts.css") }} rel="stylesheet" />
+    <link href={{ get_url(path="main.css") }} rel="stylesheet" />
+
+</head>

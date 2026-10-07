@@ -1,0 +1,42 @@
+{%- set i18n = load_data(path="i18n/" ~ lang ~ '.toml', required=false) -%}
+{%- set uglyurls = (config.extra.uglyurls or false) -%}
+<!DOCTYPE html>
+<html lang="{%- if lang != config.default_language %}{{ lang }}{% else %}{{ (config.extra.language_code if config.extra.language_code else lang) }}{% endif %}" class="dark light">
+    {% include "partials/head.html" %}
+
+    <body>
+        {% block body_start %}
+        {% endblock body_start %}
+        <div class="left-content">
+            {% block left_content %}
+            {% endblock left_content %}
+        </div>
+
+        <div class="content">
+            {# {% include "partials/nav.html" %} #}
+
+            {# Post page is the defaut #}
+            {% block main_content %}
+                bwuh?? huh?
+            {% endblock main_content %}
+
+            {% if page?.extra?.comment %}
+                {% set show_comment = page.extra_comment %}
+            {% else %}
+                {% set show_comment = false %}
+            {% endif %}
+
+            {% if show_comment %}
+                {# TODO: add comment support via mastodon/bsky/whatever #}
+            {% endif %}
+        </div>
+
+        <div class="right-content">
+            {% block right_content %}
+            {% endblock right_content %}
+        </div>
+
+        {% block body_end %}
+        {% endblock body_end %}
+    </body>
+</html>
