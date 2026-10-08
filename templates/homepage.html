@@ -10,8 +10,8 @@
 {% block main_content %}
     <div class="center box home-grid">
         <header class="home-header">
-            <img src="{{ get_url(path = 'images/immz_fish.svg') }}" alt="IMMZ FISH" fetchpriority="high">
-            <img src="{{ get_url(path = 'images/zoe_lembrik.svg') }}" alt="ZOE LEMBRIK" fetchpriority="high">
+            <img src="{{ <rel_url path='images/immz_fish.svg'/> }}" alt="IMMZ FISH" fetchpriority="high">
+            <img src="{{ <rel_url path='images/zoe_lembrik.svg'/> }}" alt="ZOE LEMBRIK" fetchpriority="high">
         </header>
 
         <main>
@@ -19,8 +19,8 @@
             <h1>{{section.title}}</h1>
             <nav>
                 <ul class="indent">
-                    <li class="home-link"><a id="active" href="{{ get_url(path='@/about.md') }}">about</a></li>
-                    <li class="home-link"><a id="active" href="{{ get_url(path='@/socials.md') }}">socials</a></li>
+                    <li class="home-link"><a id="active" href="{{ <rel_url path='@/about.md'/> }}">about</a></li>
+                    <li class="home-link"><a id="active" href="{{ <rel_url path='@/socials.md'/> }}">socials</a></li>
                     <li class="home-link"><a>🆆🅸🅿 projects</a></li>
                     <li class="home-link"><a>🆆🅸🅿 blog</a></li>
                 </ul>

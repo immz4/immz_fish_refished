@@ -1,0 +1,8 @@
+{% component rel_url(path: string, trailing_slash=false, cachebust=false, @config: map) %}
+    {%- set url = get_url(path=path, trailing_slash=trailing_slash, cachebust=cachebust) | replace(from=config.base_url, to="") -%}
+    {%- if url is starting_with(pat="//") -%}
+        /{{- url | trim_start(pat="//") -}}
+    {%- else -%}
+        {{- url -}}
+    {%- endif -%}
+{% endcomponent rel_url %}

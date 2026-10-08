@@ -61,19 +61,19 @@
 
     {# Favicons #}
     {%- if config.extra.favicon_svg %}
-    <link rel="icon" type="image/svg+xml" href="{{ get_url(path=config.extra.favicon_svg, trailing_slash=false) | safe }}" />
+    <link rel="icon" type="image/svg+xml" href="{{ <rel_url path={config.extra.favicon_svg}/> }}" />
     {%- endif %}
 
     {%- if config.extra.favicon180 %}
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ get_url(path=config.extra.favicon180, trailing_slash=false) | safe }}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ <rel_url path={config.extra.favicon180}/> }}" />
     {%- endif %}
 
     {%- if config.extra.favicon32 %}
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ get_url(path=config.extra.favicon32, trailing_slash=false) | safe }}" />
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ <rel_url path={config.extra.favicon32}/> }}" />
     {%- endif %}
 
     {%- if config.extra.favicon16 %}
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ get_url(path=config.extra.favicon16, trailing_slash=false) | safe }}" />
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ <rel_url path={config.extra.favicon16}/> }}" />
     {%- endif %}
 
     {#- Theme Switcher Button (For now disabled) #}
@@ -85,7 +85,7 @@
                 {%- if config.extra.js_switcher_default == "light" %}{% set js_theme = "js/theme_light.js" %}{% endif %}
             {%- endif %}
             <script
-                src="{{ get_url(path=js_theme, trailing_slash=false) | safe }}"
+                src="{{ <rel_url path={js_theme}/> }}"
                 {%- if integrity %} integrity="sha384-{{ get_hash(path=js_theme, sha_type=384, base64=true) | safe }}"{%- endif %}
             >
             </script>
@@ -93,14 +93,16 @@
     #}
 
     {#- Style and fonts #}
+    <link rel="preload" href="{{ <rel_url path='fonts/Cozette/CozetteVector.woff2'/> }}" as="font" type="font/woff2" crossorigin>
+
     <style>
         @font-face {
             font-display: swap;
             font-family: Cozette Vector;
             font-style: normal;
-            src: url("fonts/Cozette/CozetteVector.woff2"), local("woff2");
+            src: url("{{ <rel_url path='fonts/Cozette/CozetteVector.woff2'/> }}"), local("woff2");
         }
     </style>
 
-    <link href={{ get_url(path="main.css") }} rel="stylesheet" />
+    <link href="{{ <rel_url path='main.css'/> }}" rel="stylesheet" />
 </head>
