@@ -15,6 +15,5 @@ curl -sSL "https://github.com/tdewolff/minify/releases/download/v${MINIFY_VERSIO
 npm install -g subfont@7.2.3
 
 zola build
-ls -la public/images || echo "public/images missing"
-subfont --recursive --no-fallbacks --in-place public/index.html
+subfont --root public --recursive --no-fallbacks --in-place public/index.html
 minify -r -a -o public/ public/
