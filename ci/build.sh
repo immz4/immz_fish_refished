@@ -11,5 +11,9 @@ export PATH="$PWD/.ci-bin:$PATH"
 curl -sSL "https://github.com/tdewolff/minify/releases/download/v${MINIFY_VERSION}/minify_linux_amd64.tar.gz" \
   | tar -xz -C .ci-bin minify
 
+# subfont
+npm install -g subfont
+
 zola build
+subfont --recursive --no-fallbacks --in-place public/index.html
 minify -r -a -o public/ public/

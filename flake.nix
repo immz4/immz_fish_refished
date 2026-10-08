@@ -60,6 +60,7 @@
 
           # For minifying assets
           minify
+          subfont
         ];
 
         shellHook = ''

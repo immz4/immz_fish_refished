@@ -1,5 +1,6 @@
 build:
     zola build --output-dir ./dist --force
+    subfont --recursive --no-fallbacks --in-place dist/index.html
     minify -r -a -o dist/ dist/
 
 lighthouse: build
