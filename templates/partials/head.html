@@ -92,7 +92,15 @@
         {%- endif %}
     #}
 
-    <link href={{ get_url(path="fonts.css") }} rel="stylesheet" />
-    <link href={{ get_url(path="main.css") }} rel="stylesheet" />
+    {#- Style and fonts #}
+    <style>
+        @font-face {
+            font-display: swap;
+            font-family: Cozette Vector;
+            font-style: normal;
+            src: url("fonts/Cozette/CozetteVector.woff2"), local("woff2");
+        }
+    </style>
 
+    <link href={{ get_url(path="main.css") }} rel="stylesheet" />
 </head>
