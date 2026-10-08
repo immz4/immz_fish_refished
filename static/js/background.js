@@ -22,149 +22,21 @@ const PARAMS = Object.seal({
   COLOR: [1, 0.47, 0]
 })
 
+// Shaders are minified using https://github.com/laurentlb/shader-minifier with `--preserve-externals` flag
+// TODO: consider adding minification to the build process
+
 const SNOW_VERTEX = `#version 300 es
-precision highp float;
-
-in vec3 aOffset;
-
-uniform vec3 uCamPos;
-uniform vec2 uResolution;
-uniform float uFlakeSize;
-uniform float uMinFlakeSize;
-uniform float uDepthFade;
-uniform float uFarPlane;
-uniform float uDensity;
-uniform float uTime;
-
+precision highp float;in vec3 aOffset;uniform vec3 uCamPos;uniform vec2 uResolution;uniform float uFlakeSize,uMinFlakeSize,uDepthFade,uFarPlane,uDensity,uTime;
 #define M1 1597334677U
 #define M2 3812015801U
 #define M3 3299493293U
 #define F0 2.3283064e-10
-#define hash(n) (n * (n ^ (n >> 15)))
-#define coord3(p) (uvec3(p).x * M1 ^ uvec3(p).y * M2 ^ uvec3(p).z * M3)
-
-const vec3 camK = vec3(0.57735027, 0.57735027, 0.57735027);
-const vec3 camI = vec3(0.70710678, 0.0, -0.70710678);
-const vec3 camJ = vec3(-0.40824829, 0.81649658, -0.40824829);
-
-vec3 hash3(uint n) {
-  uvec3 hashed = hash(n) * uvec3(1U, 511U, 262143U);
-  return vec3(hashed) * F0;
-}
-
-out float vIntensity;
-out float vVariantDummy;
-
-void main() {
-  vec3 fpos = floor(uCamPos) + aOffset;
-  uint cellCoord = coord3(fpos);
-  float cellHash = hash3(cellCoord).x;
-
-  // cull cells with no flake
-  if (cellHash >= uDensity) {
-    gl_Position = vec4(2.0, 2.0, 2.0, 1.0); // push outside clip volume
-    gl_PointSize = 0.0;
-    vIntensity = 0.0;
-    return;
-  }
-
-  vec3 h = hash3(cellCoord);
-  vec3 timeAnim = uTime * 0.1 * vec3(7.0, 8.0, 5.0);
-  vec3 sinArg1 = fpos.yzx * 0.073;
-  vec3 sinArg2 = fpos.zxy * 0.27;
-  vec3 flakePos = 0.5 - 0.5 * cos(4.0 * sin(sinArg1) + 4.0 * sin(sinArg2) + 2.0 * h + timeAnim);
-  flakePos = flakePos * 0.8 + 0.1 + fpos;
-
-  vec3 rel = flakePos - uCamPos;
-  float depth = dot(rel, camK);
-  float viewX = dot(rel, camI);
-  float viewY = dot(rel, camJ);
-
-  if (depth <= 0.01 || depth > uFarPlane) {
-    gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
-    gl_PointSize = 0.0;
-    vIntensity = 0.0;
-    return;
-  }
-
-  float halfInvResX = 0.5 / uResolution.x;
-  float flakeSize = max(uFlakeSize, uMinFlakeSize * depth * halfInvResX);
-  float flakeSizeRatio = uFlakeSize / flakeSize;
-
-  vIntensity = exp2(-depth * (1.0 / uDepthFade)) * min(1.0, flakeSizeRatio * flakeSizeRatio);
-
-  float ndcX = viewX / depth;
-  float ndcY = viewY / depth;
-  float aspect = uResolution.x / uResolution.y;
-  gl_Position = vec4(ndcX * 2.0, ndcY * 2.0 * aspect, 0.0, 1.0) * depth;
-  gl_Position.w = depth;
-  gl_Position.z = 0.0;
-
-  gl_PointSize = max(uMinFlakeSize, 2.0 * uFlakeSize * uResolution.x / depth);
-}`
+#define hash(n)(n*(n^(n>>15)))
+#define coord3(p)(uvec3(p).x*M1^uvec3(p).y*M2^uvec3(p).z*M3)
+const vec3 u=vec3(.57735027),e=vec3(.70710678,0,-.70710678),y=vec3(-.40824829,.81649658,-.40824829);vec3 v(uint u){uvec3 e=hash(u)*uvec3(1U,511U,262143U);return vec3(e)*F0;}out float vIntensity,vVariantDummy;void main(){vec3 n=floor(uCamPos)+aOffset;uint p=coord3(n);float M=v(p).x;if(M>=uDensity){gl_Position=vec4(2,2,2,1);gl_PointSize=0.;vIntensity=0.;return;}vec3 f=v(p);n=(.5-.5*cos(4.*sin(n.yzx*.073)+4.*sin(n.zxy*.27)+2.*f+uTime*.1*vec3(7,8,5)))*.8+.1+n-uCamPos;M=dot(n,u);if(M<=.01||M>uFarPlane){gl_Position=vec4(2,2,2,1);gl_PointSize=0.;vIntensity=0.;return;}float s=uFlakeSize/max(uFlakeSize,uMinFlakeSize*M*(.5/uResolution.x));vIntensity=exp2(-M*(1./uDepthFade))*min(1.,s*s);gl_Position=vec4(dot(n,e)/M*2.,dot(n,y)/M*2.*(uResolution.x/uResolution.y),0,1)*M;gl_Position.w=M;gl_Position.z=0.;gl_PointSize=max(uMinFlakeSize,2.*uFlakeSize*uResolution.x/M);}`
 
 const SNOW_FRAGMENT = `#version 300 es
-precision mediump float;
-
-in float vIntensity;
-out vec4 fragColor;
-
-uniform vec3 uColor;
-uniform float uBrightness;
-uniform float uGamma;
-uniform float uVariant;
-
-float sdRoundBox(vec2 p, vec2 b, vec4 r) {
-  r.xy = (p.x > 0.0) ? r.xy : r.zw;
-  r.x  = (p.y > 0.0) ? r.x  : r.y;
-  vec2 q = abs(p) - b + r.x;
-  return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - r.x;
-}
-
-float sdBox(vec2 p, vec2 b) {
-  vec2 q = abs(p) - b;
-  return min(max(q.x, q.y), 0.0) + length(max(q, 0.0));
-}
-
-float fishSDF(vec2 p) {
-  float d = abs(p.y - 19.5); // mirror top/bottom
-
-  float body = length(vec2(p.x - clamp(p.x, 19.5, 26.0), p.y - 19.5)) - 19.5;
-
-  float lobe = sdRoundBox(vec2(p.x - 62.5, d - 9.75), vec2(9.5, 9.75), vec4(0.0, 9.5, 9.5, 0.0));
-
-  float neckBox = sdBox(vec2(p.x - 47.0, d - 5.5), vec2(6.0, 5.5));
-  float neckCut = length(vec2(p.x - 53.0, d - 11.0)) - 10.5;
-  float neck = max(neckBox, -neckCut);
-
-  float fish = min(body, min(lobe, neck));
-
-  float eye = length(p - vec2(18.5, 19.5)) - 5.5;
-  return max(fish, -eye);
-}
-
-float fishDist(vec2 uv) {
-  vec2 p = vec2(36.0 + uv.x * 36.0, 19.5 + uv.y * 36.0);
-  return fishSDF(p) > 0.0 ? 2.0 : 0.0;
-}
-
-void main() {
-  if (vIntensity <= 0.0) discard;
-
-  vec2 uv = gl_PointCoord * 2.0 - 1.0;
-  float dist;
-  if (uVariant < 0.5) {
-    dist = max(abs(uv.x), abs(uv.y));
-  } else if (uVariant < 1.5) {
-    dist = length(uv);
-  } else {
-    dist = fishDist(uv);
-  }
-  if (dist > 1.0) discard;
-
-  float intensity = vIntensity * uBrightness;
-  fragColor = vec4(uColor * pow(intensity, uGamma), 1.0);
-}`
+precision mediump float;in float vIntensity;out vec4 fragColor;uniform vec3 uColor;uniform float uBrightness,uGamma,uVariant;float v(vec2 v){vec4 m=vec4(0,9.5,9.5,0);m.xy=v.x>0.?m.xy:m.zw;m.x=v.y>0.?m.x:m.y;v=abs(v)-vec2(9.5,9.75)+m.x;return min(max(v.x,v.y),0.)+length(max(v,0.))-m.x;}float m(vec2 v){v=abs(v)-vec2(6,5.5);return min(max(v.x,v.y),0.)+length(max(v,0.));}float x(vec2 u){float x=abs(u.y-19.5);return max(min(length(vec2(u.x-clamp(u.x,19.5,26.),u.y-19.5))-19.5,min(v(vec2(u.x-62.5,x-9.75)),max(m(vec2(u.x-47.,x-5.5)),-length(vec2(u.x-53.,x-11.))+10.5))),-length(u-vec2(18.5,19.5))+5.5);}void main(){if(vIntensity<=0.)discard;vec2 v=gl_PointCoord*2.-1.;if((uVariant<.5?max(abs(v.x),abs(v.y)):uVariant<1.5?length(v):x(vec2(36.+v.x*36.,19.5+v.y*36.))>0.?2.:0.)>1.)discard;fragColor=vec4(uColor*pow(vIntensity*uBrightness,uGamma),1);}`
 
 const SNOW_UNIFORMS = ['uCamPos','uResolution','uFlakeSize','uMinFlakeSize','uDepthFade','uFarPlane','uDensity',
  'uTime','uColor','uBrightness','uGamma','uVariant']
