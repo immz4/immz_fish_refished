@@ -43,3 +43,4 @@ js_switcher_default = "dark"
 search_library = "pagefind"
 
 favicon32 = "favicon.png"
+favicon_svg = "favicon.svg"
